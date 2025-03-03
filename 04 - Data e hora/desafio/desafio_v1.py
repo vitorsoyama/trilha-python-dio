@@ -1,6 +1,8 @@
 import textwrap
 from abc import ABC, abstractclassmethod, abstractproperty
 from datetime import datetime
+import dateutil.parser
+from datetime import date
 
 
 class ContasIterador:
@@ -35,7 +37,12 @@ class Cliente:
     def realizar_transacao(self, conta, transacao):
         # TODO: validar o número de transações e invalidar a operação se for necessário
         # print("\n@@@ Você excedeu o número de transações permitidas para hoje! @@@")
-        transacao.registrar(conta)
+        quantidade = Historico.transacoes_do_dia(conta)
+
+        if quantidade >= 10:
+            print("Não foi possivel realizar essa transação! Você excedeu a quantidade de transições de hoje") 
+        else:
+            transacao.registrar(conta)
 
     def adicionar_conta(self, conta):
         self.contas.append(conta)
@@ -47,6 +54,7 @@ class PessoaFisica(Cliente):
         self.nome = nome
         self.data_nascimento = data_nascimento
         self.cpf = cpf
+        
 
 
 class Conta:
@@ -170,7 +178,12 @@ class Historico:
 
     # TODO: filtrar todas as transações realizadas no dia
     def transacoes_do_dia(self):
-        pass
+        numero_transacoes = len(
+            [transacao for transacao in self.historico.transacoes if dateutil.parser.parse(transacao["data"]).strftime("%Y-%m-%d") == str(date.today())]
+        )
+        print(numero_transacoes)
+        return numero_transacoes
+
 
 
 class Transacao(ABC):
